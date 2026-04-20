@@ -1,0 +1,1849 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walk With Me - Luxury Experience Marketplace</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&amp;family=Montserrat:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#FBF9F3',
+              100: '#F7F3E7',
+              200: '#E8DFC3',
+              300: '#D4C494',
+              400: '#C9A962',
+              500: '#B8924A',
+              600: '#9A7A3D',
+              700: '#7A6131',
+              800: '#5C4925',
+              900: '#3D301A'
+            },
+            luxury: {
+              black: '#0A0A0A',
+              charcoal: '#1A1A1A',
+              dark: '#2D2D2D',
+              cream: '#FAF8F5',
+              ivory: '#FFFFF0'
+            }
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans: ['Montserrat', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .booking-step { display: none; }
+    .booking-step.active { display: block; }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 8px;
+      z-index: 1000;
+      animation: slideUp 0.3s ease-out;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translate(-50%, 20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #B8924A;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-luxury-cream font-sans text-luxury-black">
+  <div id="app" class="h-full overflow-auto"><!-- Navigation -->
+   <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 bg-luxury-black/95 backdrop-blur-sm border-b border-gold-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+     <div class="flex items-center justify-between h-16 sm:h-20"><button onclick="navigateTo('home')" class="flex items-center gap-2">
+       <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center"><span class="text-luxury-black font-serif font-bold text-sm sm:text-lg">W</span>
+       </div><span class="font-serif text-lg sm:text-xl text-white tracking-wide">Walk With Me</span> </button>
+      <div class="hidden md:flex items-center gap-8"><button onclick="navigateTo('packages')" class="text-gold-200 hover:text-gold-400 transition text-sm tracking-wider uppercase">Experiences</button> <button onclick="navigateTo('vendor-apply')" class="text-gold-200 hover:text-gold-400 transition text-sm tracking-wider uppercase">Become a Vendor</button>
+      </div>
+      <div class="flex items-center gap-3">
+       <div id="auth-buttons" class="flex items-center gap-2"><button onclick="navigateTo('login')" class="px-4 py-2 text-gold-300 hover:text-gold-400 transition text-sm">Sign In</button> <button onclick="navigateTo('register')" class="px-4 py-2 bg-gold-500 hover:bg-gold-600 text-luxury-black rounded text-sm font-medium transition">Join</button>
+       </div>
+       <div id="user-menu" class="hidden relative"><button onclick="toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-luxury-charcoal hover:bg-luxury-dark transition">
+         <div class="w-8 h-8 rounded-full bg-gold-500/20 flex items-center justify-center">
+          <svg class="w-4 h-4 text-gold-400" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+         </div><span id="user-name-display" class="text-gold-200 text-sm hidden sm:block">User</span> </button>
+        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-luxury-charcoal rounded-lg shadow-xl border border-gold-500/20 overflow-hidden"><button onclick="navigateTo('customer-dashboard')" class="w-full px-4 py-3 text-left text-gold-200 hover:bg-luxury-dark transition text-sm" data-role="customer">My Bookings</button> <button onclick="navigateTo('vendor-dashboard')" class="w-full px-4 py-3 text-left text-gold-200 hover:bg-luxury-dark transition text-sm" data-role="vendor">Vendor Dashboard</button> <button onclick="navigateTo('admin-dashboard')" class="w-full px-4 py-3 text-left text-gold-200 hover:bg-luxury-dark transition text-sm" data-role="admin">Admin Panel</button>
+         <div class="border-t border-gold-500/20"></div><button onclick="logout()" class="w-full px-4 py-3 text-left text-red-400 hover:bg-luxury-dark transition text-sm">Sign Out</button>
+        </div>
+       </div><button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gold-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg></button>
+      </div>
+     </div>
+    </div><!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-luxury-charcoal border-t border-gold-500/20">
+     <div class="px-4 py-4 space-y-2"><button onclick="navigateTo('packages'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 text-gold-200 hover:bg-luxury-dark rounded transition">Experiences</button> <button onclick="navigateTo('vendor-apply'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 text-gold-200 hover:bg-luxury-dark rounded transition">Become a Vendor</button>
+     </div>
+    </div>
+   </nav><!-- HOME PAGE -->
+   <div id="page-home" class="page active"><!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center bg-luxury-black overflow-hidden">
+     <div class="absolute inset-0 opacity-30">
+      <div class="absolute inset-0 bg-gradient-to-br from-gold-900/40 via-transparent to-gold-800/20"></div>
+      <div class="absolute top-0 left-0 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-gold-600/10 rounded-full blur-3xl"></div>
+     </div>
+     <div class="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto pt-20">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/10 border border-gold-500/30 mb-8"><span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span> <span class="text-gold-300 text-sm tracking-wider uppercase">Ghana's Premier Experience Curator</span>
+      </div>
+      <h1 id="hero-title" class="font-serif text-4xl sm:text-5xl md:text-7xl text-white mb-6 leading-tight">Curate Your<br><span class="text-gold-400">Perfect Moment</span></h1>
+      <p id="hero-subtitle" class="text-gold-200/80 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">Luxury experiences crafted for life's finest occasions. From intimate dates to grand celebrations, we orchestrate moments that become memories.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4"><button onclick="navigateTo('packages')" id="hero-cta" class="px-8 py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition transform hover:scale-105 text-lg"> Explore Experiences </button> <button onclick="navigateTo('vendor-apply')" class="px-8 py-4 border border-gold-500/50 text-gold-300 hover:bg-gold-500/10 rounded-lg transition"> Partner With Us </button>
+      </div>
+     </div>
+     <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+      <svg class="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
+     </div>
+    </section><!-- Experience Categories -->
+    <section class="py-20 sm:py-32 bg-luxury-cream">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16"><span class="text-gold-600 text-sm tracking-widest uppercase">Our Services</span>
+       <h2 class="font-serif text-3xl sm:text-5xl text-luxury-black mt-4">Experiences We Curate</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+       <div onclick="filterPackages('date')" class="group cursor-pointer bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gold-100">
+        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-rose-100 to-rose-200 flex items-center justify-center mb-6 group-hover:scale-110 transition">
+         <svg class="w-8 h-8 text-rose-600" fill="currentColor" viewbox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+         </svg>
+        </div>
+        <h3 class="font-serif text-2xl text-luxury-black mb-2">Romantic Dates</h3>
+        <p class="text-gray-600">Intimate dinners, sunset picnics, and unforgettable evenings</p>
+       </div>
+       <div onclick="filterPackages('party')" class="group cursor-pointer bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gold-100">
+        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mb-6 group-hover:scale-110 transition">
+         <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewbox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+         </svg>
+        </div>
+        <h3 class="font-serif text-2xl text-luxury-black mb-2">Celebrations</h3>
+        <p class="text-gray-600">Birthdays, anniversaries, and milestone moments</p>
+       </div>
+       <div onclick="filterPackages('trip')" class="group cursor-pointer bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gold-100">
+        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center mb-6 group-hover:scale-110 transition">
+         <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewbox="0 0 24 24">
+          <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+         </svg>
+        </div>
+        <h3 class="font-serif text-2xl text-luxury-black mb-2">Luxury Trips</h3>
+        <p class="text-gray-600">Curated getaways and adventure experiences</p>
+       </div>
+       <div onclick="filterPackages('custom')" class="group cursor-pointer bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition duration-300 border border-gold-100">
+        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-gold-100 to-gold-200 flex items-center justify-center mb-6 group-hover:scale-110 transition">
+         <svg class="w-8 h-8 text-gold-600" fill="currentColor" viewbox="0 0 24 24">
+          <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" />
+         </svg>
+        </div>
+        <h3 class="font-serif text-2xl text-luxury-black mb-2">Custom Events</h3>
+        <p class="text-gray-600">Proposals, engagements, and bespoke experiences</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- How It Works -->
+    <section class="py-20 sm:py-32 bg-luxury-black">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16"><span class="text-gold-400 text-sm tracking-widest uppercase">Process</span>
+       <h2 class="font-serif text-3xl sm:text-5xl text-white mt-4">How It Works</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+       <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-gold-500/20 flex items-center justify-center mx-auto mb-6"><span class="font-serif text-3xl text-gold-400">1</span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Choose Your Experience</h3>
+        <p class="text-gray-400">Browse our curated packages or request a custom experience tailored to your vision</p>
+       </div>
+       <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-gold-500/20 flex items-center justify-center mx-auto mb-6"><span class="font-serif text-3xl text-gold-400">2</span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Customize &amp; Book</h3>
+        <p class="text-gray-400">Select your preferred tier, date, and add personal touches to make it uniquely yours</p>
+       </div>
+       <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-gold-500/20 flex items-center justify-center mx-auto mb-6"><span class="font-serif text-3xl text-gold-400">3</span>
+        </div>
+        <h3 class="font-serif text-2xl text-white mb-3">Live The Moment</h3>
+        <p class="text-gray-400">We handle all logistics. You simply show up and create unforgettable memories</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-gold-600 to-gold-500">
+     <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="font-serif text-3xl sm:text-4xl text-luxury-black mb-6">Ready to Create Your Moment?</h2>
+      <p class="text-luxury-black/80 text-lg mb-8">Join thousands who have trusted Walk With Me to curate their most precious experiences</p><button onclick="navigateTo('packages')" class="px-8 py-4 bg-luxury-black text-gold-400 font-medium rounded-lg hover:bg-luxury-charcoal transition"> Start Planning Now </button>
+     </div>
+    </section><!-- Footer -->
+    <footer class="bg-luxury-black py-16 border-t border-gold-500/20">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+       <div>
+        <div class="flex items-center gap-2 mb-4">
+         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center"><span class="text-luxury-black font-serif font-bold">W</span>
+         </div><span class="font-serif text-xl text-white">Walk With Me</span>
+        </div>
+        <p class="text-gray-400 text-sm">Curating luxury experiences in Ghana since 2024</p>
+       </div>
+       <div>
+        <h4 class="text-gold-400 font-medium mb-4">Experiences</h4>
+        <ul class="space-y-2 text-gray-400 text-sm">
+         <li><button onclick="filterPackages('date')" class="hover:text-gold-400 transition">Romantic Dates</button></li>
+         <li><button onclick="filterPackages('party')" class="hover:text-gold-400 transition">Celebrations</button></li>
+         <li><button onclick="filterPackages('trip')" class="hover:text-gold-400 transition">Luxury Trips</button></li>
+         <li><button onclick="filterPackages('custom')" class="hover:text-gold-400 transition">Custom Events</button></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="text-gold-400 font-medium mb-4">Company</h4>
+        <ul class="space-y-2 text-gray-400 text-sm">
+         <li><button class="hover:text-gold-400 transition">About Us</button></li>
+         <li><button onclick="navigateTo('vendor-apply')" class="hover:text-gold-400 transition">Partner With Us</button></li>
+         <li><button class="hover:text-gold-400 transition">Contact</button></li>
+        </ul>
+       </div>
+       <div>
+        <h4 class="text-gold-400 font-medium mb-4">Contact</h4>
+        <ul class="space-y-2 text-gray-400 text-sm">
+         <li>Accra, Ghana</li>
+         <li>hello@walkwithme.gh</li>
+         <li>+233 XX XXX XXXX</li>
+        </ul>
+       </div>
+      </div>
+      <div class="border-t border-gold-500/20 mt-12 pt-8 text-center text-gray-500 text-sm">
+       © 2024 Walk With Me. All rights reserved.
+      </div>
+     </div>
+    </footer>
+   </div><!-- PACKAGES PAGE -->
+   <div id="page-packages" class="page">
+    <div class="pt-24 pb-16 bg-luxury-black">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+       <h1 class="font-serif text-4xl sm:text-5xl text-white mb-4">Our Experiences</h1>
+       <p class="text-gold-200/80 max-w-2xl mx-auto">Discover curated packages designed to create unforgettable moments</p>
+      </div><!-- Filters -->
+      <div class="flex flex-wrap justify-center gap-3 mt-10"><button onclick="filterPackages('all')" data-filter="all" class="filter-btn px-6 py-2 rounded-full border border-gold-500/50 text-gold-300 hover:bg-gold-500 hover:text-luxury-black transition text-sm">All</button> <button onclick="filterPackages('date')" data-filter="date" class="filter-btn px-6 py-2 rounded-full border border-gold-500/50 text-gold-300 hover:bg-gold-500 hover:text-luxury-black transition text-sm">Dates</button> <button onclick="filterPackages('party')" data-filter="party" class="filter-btn px-6 py-2 rounded-full border border-gold-500/50 text-gold-300 hover:bg-gold-500 hover:text-luxury-black transition text-sm">Parties</button> <button onclick="filterPackages('trip')" data-filter="trip" class="filter-btn px-6 py-2 rounded-full border border-gold-500/50 text-gold-300 hover:bg-gold-500 hover:text-luxury-black transition text-sm">Trips</button> <button onclick="filterPackages('custom')" data-filter="custom" class="filter-btn px-6 py-2 rounded-full border border-gold-500/50 text-gold-300 hover:bg-gold-500 hover:text-luxury-black transition text-sm">Custom</button>
+      </div>
+     </div>
+    </div>
+    <div class="py-16 bg-luxury-cream">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div id="packages-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"><!-- Packages will be rendered here -->
+      </div>
+     </div>
+    </div>
+   </div><!-- PACKAGE DETAIL PAGE -->
+   <div id="page-package-detail" class="page">
+    <div id="package-detail-content" class="pt-20"><!-- Dynamic content -->
+    </div>
+   </div><!-- BOOKING PAGE -->
+   <div id="page-booking" class="page">
+    <div class="pt-24 pb-16 min-h-screen bg-gradient-to-b from-luxury-black to-luxury-charcoal">
+     <div class="max-w-3xl mx-auto px-4 sm:px-6"><!-- Progress Steps -->
+      <div class="flex items-center justify-center mb-12">
+       <div class="flex items-center gap-4">
+        <div class="booking-progress-step active flex items-center gap-2" data-step="1">
+         <div class="w-10 h-10 rounded-full bg-gold-500 text-luxury-black flex items-center justify-center font-medium">
+          1
+         </div><span class="hidden sm:block text-gold-300 text-sm">Details</span>
+        </div>
+        <div class="w-8 sm:w-16 h-px bg-gold-500/30"></div>
+        <div class="booking-progress-step flex items-center gap-2" data-step="2">
+         <div class="w-10 h-10 rounded-full bg-luxury-dark text-gold-500 border border-gold-500/30 flex items-center justify-center font-medium">
+          2
+         </div><span class="hidden sm:block text-gray-500 text-sm">Customize</span>
+        </div>
+        <div class="w-8 sm:w-16 h-px bg-gold-500/30"></div>
+        <div class="booking-progress-step flex items-center gap-2" data-step="3">
+         <div class="w-10 h-10 rounded-full bg-luxury-dark text-gold-500 border border-gold-500/30 flex items-center justify-center font-medium">
+          3
+         </div><span class="hidden sm:block text-gray-500 text-sm">Payment</span>
+        </div>
+       </div>
+      </div>
+      <div class="bg-luxury-dark rounded-2xl p-6 sm:p-10 border border-gold-500/20"><!-- Step 1: Basic Details -->
+       <div id="booking-step-1" class="booking-step active fade-in">
+        <h2 class="font-serif text-3xl text-white mb-2">Book Your Experience</h2>
+        <p id="booking-package-name" class="text-gold-400 mb-8">Package Name</p>
+        <form id="booking-form-step1" class="space-y-6">
+         <div><label for="booking-tier" class="block text-gold-200 text-sm mb-2">Select Tier</label> <select id="booking-tier" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white focus:border-gold-500"> <option value="essential">Essential</option> <option value="premium">Premium</option> <option value="luxury">Luxury</option> </select>
+         </div>
+         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div><label for="booking-date" class="block text-gold-200 text-sm mb-2">Preferred Date</label> <input type="date" id="booking-date" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white" required>
+          </div>
+          <div><label for="booking-time" class="block text-gold-200 text-sm mb-2">Preferred Time</label> <input type="time" id="booking-time" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white" required>
+          </div>
+         </div>
+         <div><label for="booking-guests" class="block text-gold-200 text-sm mb-2">Number of Guests</label> <input type="number" id="booking-guests" min="1" max="100" value="2" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white" required>
+         </div><button type="submit" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Continue to Customize </button>
+        </form>
+       </div><!-- Step 2: Customization -->
+       <div id="booking-step-2" class="booking-step fade-in">
+        <h2 class="font-serif text-3xl text-white mb-2">Customize Your Experience</h2>
+        <p class="text-gold-400 mb-8">Add personal touches to make it special</p>
+        <form id="booking-form-step2" class="space-y-6">
+         <div><label for="booking-notes" class="block text-gold-200 text-sm mb-2">Special Requests</label> <textarea id="booking-notes" rows="4" placeholder="Any dietary requirements, allergies, special occasions, or preferences..." class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500 resize-none"></textarea>
+         </div>
+         <div class="bg-luxury-charcoal rounded-xl p-6 border border-gold-500/20">
+          <h3 class="text-gold-300 font-medium mb-4">Add-ons (Optional)</h3>
+          <div class="space-y-3"><label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="addon-photography" class="w-5 h-5 rounded border-gold-500/30 text-gold-500 focus:ring-gold-500 bg-luxury-black"> <span class="text-white">Professional Photography (+GHS 500)</span> </label> <label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="addon-flowers" class="w-5 h-5 rounded border-gold-500/30 text-gold-500 focus:ring-gold-500 bg-luxury-black"> <span class="text-white">Premium Flower Arrangement (+GHS 300)</span> </label> <label class="flex items-center gap-3 cursor-pointer"> <input type="checkbox" id="addon-transport" class="w-5 h-5 rounded border-gold-500/30 text-gold-500 focus:ring-gold-500 bg-luxury-black"> <span class="text-white">Luxury Transport (+GHS 800)</span> </label>
+          </div>
+         </div>
+         <div class="flex gap-4"><button type="button" onclick="goToBookingStep(1)" class="px-6 py-4 border border-gold-500/50 text-gold-300 rounded-lg hover:bg-gold-500/10 transition"> Back </button> <button type="submit" class="flex-1 py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Continue to Payment </button>
+         </div>
+        </form>
+       </div><!-- Step 3: Payment -->
+       <div id="booking-step-3" class="booking-step fade-in">
+        <h2 class="font-serif text-3xl text-white mb-2">Complete Payment</h2>
+        <p class="text-gold-400 mb-8">Secure payment via Paystack</p>
+        <div class="bg-luxury-charcoal rounded-xl p-6 border border-gold-500/20 mb-8">
+         <h3 class="text-gold-300 font-medium mb-4">Booking Summary</h3>
+         <div id="booking-summary" class="space-y-3 text-sm"><!-- Summary will be rendered here -->
+         </div>
+         <div class="border-t border-gold-500/20 mt-4 pt-4">
+          <div class="flex justify-between text-lg"><span class="text-white font-medium">Total</span> <span id="booking-total" class="text-gold-400 font-serif text-2xl">GHS 0</span>
+          </div>
+         </div>
+        </div>
+        <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-4 mb-6">
+         <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-green-400 mt-0.5" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+          </svg>
+          <div>
+           <p class="text-green-400 font-medium text-sm">Secure Escrow Payment</p>
+           <p class="text-green-300/70 text-xs mt-1">Your payment is held securely until your experience is completed</p>
+          </div>
+         </div>
+        </div>
+        <div class="flex gap-4"><button type="button" onclick="goToBookingStep(2)" class="px-6 py-4 border border-gold-500/50 text-gold-300 rounded-lg hover:bg-gold-500/10 transition"> Back </button> <button onclick="processPayment()" id="pay-button" class="flex-1 py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
+          </svg> Pay Now </button>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- LOGIN PAGE -->
+   <div id="page-login" class="page">
+    <div class="min-h-screen pt-24 pb-16 bg-gradient-to-b from-luxury-black to-luxury-charcoal flex items-center justify-center">
+     <div class="w-full max-w-md px-4">
+      <div class="text-center mb-10">
+       <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center mx-auto mb-6"><span class="text-luxury-black font-serif font-bold text-2xl">W</span>
+       </div>
+       <h1 class="font-serif text-3xl text-white">Welcome Back</h1>
+       <p class="text-gold-200/70 mt-2">Sign in to your account</p>
+      </div>
+      <div class="bg-luxury-dark rounded-2xl p-8 border border-gold-500/20">
+       <form id="login-form" class="space-y-6">
+        <div><label for="login-email" class="block text-gold-200 text-sm mb-2">Email</label> <input type="email" id="login-email" placeholder="you@example.com" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div>
+        <div><label for="login-password" class="block text-gold-200 text-sm mb-2">Password</label> <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div><button type="submit" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Sign In </button>
+       </form>
+       <p class="text-center text-gray-400 text-sm mt-6">Don't have an account? <button onclick="navigateTo('register')" class="text-gold-400 hover:text-gold-300">Create one</button></p>
+      </div>
+     </div>
+    </div>
+   </div><!-- REGISTER PAGE -->
+   <div id="page-register" class="page">
+    <div class="min-h-screen pt-24 pb-16 bg-gradient-to-b from-luxury-black to-luxury-charcoal flex items-center justify-center">
+     <div class="w-full max-w-md px-4">
+      <div class="text-center mb-10">
+       <h1 class="font-serif text-3xl text-white">Join Walk With Me</h1>
+       <p class="text-gold-200/70 mt-2">Create your account</p>
+      </div>
+      <div class="bg-luxury-dark rounded-2xl p-8 border border-gold-500/20">
+       <form id="register-form" class="space-y-6">
+        <div><label for="register-name" class="block text-gold-200 text-sm mb-2">Full Name</label> <input type="text" id="register-name" placeholder="John Doe" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div>
+        <div><label for="register-email" class="block text-gold-200 text-sm mb-2">Email</label> <input type="email" id="register-email" placeholder="you@example.com" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div>
+        <div><label for="register-phone" class="block text-gold-200 text-sm mb-2">Phone Number</label> <input type="tel" id="register-phone" placeholder="+233 XX XXX XXXX" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div>
+        <div><label for="register-password" class="block text-gold-200 text-sm mb-2">Password</label> <input type="password" id="register-password" placeholder="••••••••" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div><button type="submit" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Create Account </button>
+       </form>
+       <p class="text-center text-gray-400 text-sm mt-6">Already have an account? <button onclick="navigateTo('login')" class="text-gold-400 hover:text-gold-300">Sign in</button></p>
+      </div>
+     </div>
+    </div>
+   </div><!-- VENDOR APPLICATION PAGE -->
+   <div id="page-vendor-apply" class="page">
+    <div class="pt-24 pb-16 min-h-screen bg-gradient-to-b from-luxury-black to-luxury-charcoal">
+     <div class="max-w-2xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-10"><span class="text-gold-400 text-sm tracking-widest uppercase">Partner Program</span>
+       <h1 class="font-serif text-4xl text-white mt-4">Become a Vendor</h1>
+       <p class="text-gold-200/70 mt-4 max-w-lg mx-auto">Join our network of premium service providers and connect with clients seeking luxury experiences</p>
+      </div>
+      <div class="bg-luxury-dark rounded-2xl p-8 border border-gold-500/20">
+       <form id="vendor-application-form" class="space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+         <div><label for="vendor-name" class="block text-gold-200 text-sm mb-2">Contact Name</label> <input type="text" id="vendor-name" placeholder="Your full name" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+         </div>
+         <div><label for="vendor-business" class="block text-gold-200 text-sm mb-2">Business Name</label> <input type="text" id="vendor-business" placeholder="Your business name" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+         <div><label for="vendor-email" class="block text-gold-200 text-sm mb-2">Email</label> <input type="email" id="vendor-email" placeholder="you@business.com" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+         </div>
+         <div><label for="vendor-phone" class="block text-gold-200 text-sm mb-2">Phone</label> <input type="tel" id="vendor-phone" placeholder="+233 XX XXX XXXX" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+         </div>
+        </div>
+        <div><label for="vendor-service-type" class="block text-gold-200 text-sm mb-2">Service Category</label> <select id="vendor-service-type" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white" required> <option value="">Select a category</option> <option value="venue">Venue / Space Rental</option> <option value="catering">Catering &amp; Food</option> <option value="transport">Transportation</option> <option value="decor">Decor &amp; Styling</option> <option value="photography">Photography &amp; Video</option> <option value="entertainment">Entertainment</option> <option value="other">Other Services</option> </select>
+        </div>
+        <div><label for="vendor-location" class="block text-gold-200 text-sm mb-2">Location</label> <input type="text" id="vendor-location" placeholder="City, Region" class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500" required>
+        </div>
+        <div><label for="vendor-description" class="block text-gold-200 text-sm mb-2">Tell us about your services</label> <textarea id="vendor-description" rows="4" placeholder="Describe your services, experience, and what makes you unique..." class="w-full px-4 py-3 bg-luxury-charcoal border border-gold-500/30 rounded-lg text-white placeholder-gray-500 resize-none" required></textarea>
+        </div><button type="submit" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Submit Application </button>
+       </form>
+      </div>
+     </div>
+    </div>
+   </div><!-- CUSTOMER DASHBOARD -->
+   <div id="page-customer-dashboard" class="page">
+    <div class="pt-24 pb-16 min-h-screen bg-luxury-cream">
+     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10">
+       <h1 class="font-serif text-3xl sm:text-4xl text-luxury-black">My Bookings</h1>
+       <p class="text-gray-600 mt-2">Track and manage your experiences</p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><!-- Stats Cards -->
+       <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-gold-100 ZZZflex items-center justify-center">
+           <svg class="w-6 h-6 text-gold-600" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z" />
+           </svg>
+          </div>
+          <div>
+           <p class="text-gray-500 text-sm">Upcoming</p>
+           <p id="customer-upcoming-count" class="text-2xl font-serif text-luxury-black">0</p>
+          </div>
+         </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+           <svg class="w-6 h-6 text-green-600" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L18 9l-9 9z" />
+           </svg>
+          </div>
+          <div>
+           <p class="text-gray-500 text-sm">Completed</p>
+           <p id="customer-completed-count" class="text-2xl font-serif text-luxury-black">0</p>
+          </div>
+         </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+           <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewbox="0 0 24 24">
+            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+           </svg>
+          </div>
+          <div>
+           <p class="text-gray-500 text-sm">Total Spent</p>
+           <p id="customer-total-spent" class="text-2xl font-serif text-luxury-black">GHS 0</p>
+          </div>
+         </div>
+        </div>
+       </div><!-- Bookings List -->
+       <div class="lg:col-span-3">
+        <div class="bg-white rounded-xl shadow-sm border border-gold-100 overflow-hidden">
+         <div class="px-6 py-4 border-b border-gold-100">
+          <h2 class="font-serif text-xl text-luxury-black">Recent Bookings</h2>
+         </div>
+         <div id="customer-bookings-list" class="divide-y divide-gold-100">
+          <div class="px-6 py-12 text-center text-gray-500">
+           <p>No bookings yet</p><button onclick="navigateTo('packages')" class="mt-4 text-gold-600 hover:text-gold-700 font-medium">Browse Experiences →</button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- VENDOR DASHBOARD -->
+   <div id="page-vendor-dashboard" class="page">
+    <div class="pt-24 pb-16 min-h-screen bg-luxury-cream">
+     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+       <div>
+        <h1 class="font-serif text-3xl sm:text-4xl text-luxury-black">Vendor Dashboard</h1>
+        <p class="text-gray-600 mt-2">Manage your services and bookings</p>
+       </div>
+       <div id="vendor-status-badge" class="px-4 py-2 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium">
+        Pending Verification
+       </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"><!-- Stats -->
+       <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <p class="text-gray-500 text-sm">Pending Requests</p>
+         <p id="vendor-pending-count" class="text-2xl font-serif text-luxury-black mt-1">0</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <p class="text-gray-500 text-sm">Active Jobs</p>
+         <p id="vendor-active-count" class="text-2xl font-serif text-luxury-black mt-1">0</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <p class="text-gray-500 text-sm">Completed</p>
+         <p id="vendor-completed-count" class="text-2xl font-serif text-luxury-black mt-1">0</p>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gold-100">
+         <p class="text-gray-500 text-sm">Total Earnings</p>
+         <p id="vendor-total-earnings" class="text-2xl font-serif text-luxury-black mt-1">GHS 0</p>
+        </div>
+       </div><!-- Booking Requests -->
+       <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl shadow-sm border border-gold-100 overflow-hidden">
+         <div class="px-6 py-4 border-b border-gold-100">
+          <h2 class="font-serif text-xl text-luxury-black">Booking Requests</h2>
+         </div>
+         <div id="vendor-requests-list" class="divide-y divide-gold-100">
+          <div class="px-6 py-12 text-center text-gray-500">
+           <p>No pending requests</p>
+          </div>
+         </div>
+        </div>
+       </div><!-- Profile Card -->
+       <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gold-100 p-6">
+         <h2 class="font-serif text-xl text-luxury-black mb-4">Your Profile</h2>
+         <div id="vendor-profile-info" class="space-y-4">
+          <p class="text-gray-500 text-sm">Complete your profile to start receiving bookings</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- ADMIN DASHBOARD -->
+   <div id="page-admin-dashboard" class="page">
+    <div class="pt-24 pb-16 min-h-screen bg-gray-100">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10">
+       <h1 class="font-serif text-3xl sm:text-4xl text-luxury-black">Admin Dashboard</h1>
+       <p class="text-gray-600 mt-2">Manage platform operations</p>
+      </div><!-- Admin Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+       <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-gray-500 text-sm">Total Bookings</p>
+          <p id="admin-total-bookings" class="text-3xl font-serif text-luxury-black mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z" />
+          </svg>
+         </div>
+        </div>
+       </div>
+       <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-gray-500 text-sm">Active Vendors</p>
+          <p id="admin-active-vendors" class="text-3xl font-serif text-luxury-black mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+          </svg>
+         </div>
+        </div>
+       </div>
+       <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-gray-500 text-sm">Pending Vendors</p>
+          <p id="admin-pending-vendors" class="text-3xl font-serif text-luxury-black mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+          </svg>
+         </div>
+        </div>
+       </div>
+       <div class="bg-white rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-gray-500 text-sm">Revenue (Escrow)</p>
+          <p id="admin-total-revenue" class="text-3xl font-serif text-luxury-black mt-1">GHS 0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg bg-gold-100 flex items-center justify-center">
+          <svg class="w-6 h-6 text-gold-600" fill="currentColor" viewbox="0 0 24 24">
+           <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+          </svg>
+         </div>
+        </div>
+       </div>
+      </div><!-- Admin Tabs -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+       <div class="border-b border-gray-200">
+        <nav class="flex -mb-px"><button onclick="switchAdminTab('vendors')" class="admin-tab active px-6 py-4 text-sm font-medium border-b-2 border-gold-500 text-gold-600" data-tab="vendors">Vendor Applications</button> <button onclick="switchAdminTab('bookings')" class="admin-tab px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="bookings">All Bookings</button> <button onclick="switchAdminTab('packages')" class="admin-tab px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="packages">Manage Packages</button>
+        </nav>
+       </div><!-- Vendors Tab -->
+       <div id="admin-tab-vendors" class="admin-tab-content">
+        <div id="admin-vendors-list" class="divide-y divide-gray-100">
+         <div class="px-6 py-12 text-center text-gray-500">
+          <p>No pending vendor applications</p>
+         </div>
+        </div>
+       </div><!-- Bookings Tab -->
+       <div id="admin-tab-bookings" class="admin-tab-content hidden">
+        <div id="admin-bookings-list" class="divide-y divide-gray-100">
+         <div class="px-6 py-12 text-center text-gray-500">
+          <p>No bookings yet</p>
+         </div>
+        </div>
+       </div><!-- Packages Tab -->
+       <div id="admin-tab-packages" class="admin-tab-content hidden">
+        <div class="p-6"><button onclick="showAddPackageModal()" class="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition mb-6"> + Add New Package </button>
+         <div id="admin-packages-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Packages will be listed here -->
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- BOOKING SUCCESS PAGE -->
+   <div id="page-booking-success" class="page">
+    <div class="min-h-screen pt-24 pb-16 bg-luxury-black flex items-center justify-center">
+     <div class="text-center px-4 max-w-lg">
+      <div class="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-8">
+       <svg class="w-12 h-12 text-green-400" fill="currentColor" viewbox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L18 9l-9 9z" />
+       </svg>
+      </div>
+      <h1 class="font-serif text-4xl text-white mb-4">Booking Confirmed!</h1>
+      <p class="text-gold-200/80 mb-8">Thank you for your booking. We'll send you a confirmation email with all the details shortly.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center"><button onclick="navigateTo('customer-dashboard')" class="px-8 py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> View My Bookings </button> <button onclick="navigateTo('home')" class="px-8 py-4 border border-gold-500/50 text-gold-300 hover:bg-gold-500/10 rounded-lg transition"> Back to Home </button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Add Package Modal -->
+   <div id="add-package-modal" class="modal-overlay">
+    <div class="bg-white rounded-2xl w-full max-w-lg mx-4 max-h-[90%] overflow-auto">
+     <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="font-serif text-2xl text-luxury-black">Add New Package</h2><button onclick="closeAddPackageModal()" class="text-gray-400 hover:text-gray-600">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+       </svg></button>
+     </div>
+     <form id="add-package-form" class="p-6 space-y-6">
+      <div><label for="package-name" class="block text-gray-700 text-sm font-medium mb-2">Package Name</label> <input type="text" id="package-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg" required>
+      </div>
+      <div><label for="package-category" class="block text-gray-700 text-sm font-medium mb-2">Category</label> <select id="package-category" class="w-full px-4 py-3 border border-gray-300 rounded-lg" required> <option value="date">Date</option> <option value="party">Party</option> <option value="trip">Trip</option> <option value="custom">Custom</option> </select>
+      </div>
+      <div><label for="package-description" class="block text-gray-700 text-sm font-medium mb-2">Description</label> <textarea id="package-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none" required></textarea>
+      </div>
+      <div><label for="package-base-price" class="block text-gray-700 text-sm font-medium mb-2">Base Price (GHS)</label> <input type="number" id="package-base-price" min="0" class="w-full px-4 py-3 border border-gray-300 rounded-lg" required>
+      </div>
+      <div><label for="package-services" class="block text-gray-700 text-sm font-medium mb-2">Included Services (comma separated)</label> <input type="text" id="package-services" placeholder="e.g., Venue, Decor, Catering" class="w-full px-4 py-3 border border-gray-300 rounded-lg" required>
+      </div><button type="submit" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition"> Create Package </button>
+     </form>
+    </div>
+   </div>
+  </div>
+  <script>
+    // ========================================
+    // APPLICATION STATE & CONFIGURATION
+    // ========================================
+    
+    const defaultConfig = {
+      hero_title: 'Curate Your Perfect Moment',
+      hero_subtitle: 'Luxury experiences crafted for life\'s finest occasions. From intimate dates to grand celebrations, we orchestrate moments that become memories.',
+      cta_text: 'Explore Experiences',
+      primary_color: '#B8924A',
+      secondary_color: '#0A0A0A',
+      text_color: '#FFFFFF',
+      accent_color: '#D4C494',
+      background_color: '#FAF8F5'
+    };
+    
+    let config = { ...defaultConfig };
+    let currentUser = null;
+    let allData = [];
+    let currentBooking = {};
+    let selectedPackage = null;
+    
+    // Static package data (Reference Content - Paradigm A)
+    const staticPackages = [
+      {
+        id: 'pkg-1',
+        name: 'Romantic Sunset Dinner',
+        category: 'date',
+        description: 'An intimate evening for two with a private beachside dinner, live music, and spectacular sunset views.',
+        basePrice: 2500,
+        image: 'sunset',
+        services: ['Private Beach Setup', 'Gourmet 5-Course Meal', 'Live Musician', 'Personal Butler', 'Rose Petals & Candles'],
+        tiers: {
+          essential: { price: 2500, includes: ['Venue', 'Dinner', 'Basic Decor'] },
+          premium: { price: 4000, includes: ['Venue', 'Dinner', 'Full Decor', 'Live Music'] },
+          luxury: { price: 6500, includes: ['Everything', 'Private Chef', 'Photography', 'Transport'] }
+        }
+      },
+      {
+        id: 'pkg-2',
+        name: 'Birthday Celebration',
+        category: 'party',
+        description: 'A complete birthday experience with venue, catering, entertainment, and personalized touches.',
+        basePrice: 5000,
+        image: 'party',
+        services: ['Venue Decoration', 'Custom Cake', 'Catering', 'DJ & Sound', 'Photography'],
+        tiers: {
+          essential: { price: 5000, includes: ['Venue', 'Basic Decor', 'Cake'] },
+          premium: { price: 8000, includes: ['Venue', 'Full Decor', 'Catering', 'DJ'] },
+          luxury: { price: 15000, includes: ['Everything', 'Live Band', 'Videography', 'Premium Bar'] }
+        }
+      },
+      {
+        id: 'pkg-3',
+        name: 'Proposal Experience',
+        category: 'custom',
+        description: 'Create the perfect moment to ask that special question with our bespoke proposal packages.',
+        basePrice: 3500,
+        image: 'proposal',
+        services: ['Private Location', 'Romantic Setup', 'Hidden Photographer', 'Champagne Toast', 'Flower Arrangements'],
+        tiers: {
+          essential: { price: 3500, includes: ['Location', 'Basic Setup', 'Champagne'] },
+          premium: { price: 6000, includes: ['Location', 'Full Setup', 'Photographer', 'Flowers'] },
+          luxury: { price: 10000, includes: ['Everything', 'Video', 'Private Musician', 'Luxury Dinner'] }
+        }
+      },
+      {
+        id: 'pkg-4',
+        name: 'Cape Coast Getaway',
+        category: 'trip',
+        description: 'A luxurious weekend escape to Cape Coast with castle tours, beach time, and fine dining.',
+        basePrice: 8000,
+        image: 'trip',
+        services: ['Luxury Accommodation', 'Private Transport', 'Castle Tours', 'Beach Activities', 'Gourmet Meals'],
+        tiers: {
+          essential: { price: 8000, includes: ['Hotel', 'Transport', 'Basic Tours'] },
+          premium: { price: 12000, includes: ['Luxury Hotel', 'Private Car', 'All Tours', 'Meals'] },
+          luxury: { price: 20000, includes: ['Suite', 'Private Guide', 'Yacht Trip', 'Spa', 'Fine Dining'] }
+        }
+      },
+      {
+        id: 'pkg-5',
+        name: 'Anniversary Celebration',
+        category: 'date',
+        description: 'Celebrate your love story with a magical anniversary experience designed just for you.',
+        basePrice: 3000,
+        image: 'anniversary',
+        services: ['Private Venue', 'Romantic Dinner', 'Anniversary Cake', 'Photo Session', 'Personalized Gifts'],
+        tiers: {
+          essential: { price: 3000, includes: ['Dinner', 'Cake', 'Basic Decor'] },
+          premium: { price: 5500, includes: ['Private Venue', 'Dinner', 'Full Setup', 'Photos'] },
+          luxury: { price: 9000, includes: ['Everything', 'Musicians', 'Surprise Elements', 'Luxury Suite'] }
+        }
+      },
+      {
+        id: 'pkg-6',
+        name: 'Graduation Party',
+        category: 'party',
+        description: 'Celebrate academic achievements with a memorable graduation party for family and friends.',
+        basePrice: 4000,
+        image: 'graduation',
+        services: ['Venue', 'Catering', 'Decor', 'Sound System', 'Photography'],
+        tiers: {
+          essential: { price: 4000, includes: ['Venue', 'Basic Decor', 'Light Refreshments'] },
+          premium: { price: 7000, includes: ['Venue', 'Full Decor', 'Catering', 'DJ'] },
+          luxury: { price: 12000, includes: ['Premium Venue', 'Everything', 'Live Band', 'Video'] }
+        }
+      }
+    ];
+    
+    // ========================================
+    // DATA SDK INITIALIZATION
+    // ========================================
+    
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
+        updateDashboards();
+      }
+    };
+    
+    async function initializeApp() {
+      // Initialize Element SDK
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (newConfig) => {
+            config = { ...config, ...newConfig };
+            applyConfig();
+          },
+          mapToCapabilities: (cfg) => ({
+            recolorables: [
+              {
+                get: () => cfg.primary_color || defaultConfig.primary_color,
+                set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }
+              },
+              {
+                get: () => cfg.secondary_color || defaultConfig.secondary_color,
+                set: (v) => { cfg.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); }
+              },
+              {
+                get: () => cfg.text_color || defaultConfig.text_color,
+                set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+              },
+              {
+                get: () => cfg.accent_color || defaultConfig.accent_color,
+                set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
+              },
+              {
+                get: () => cfg.background_color || defaultConfig.background_color,
+                set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (cfg) => new Map([
+            ['hero_title', cfg.hero_title || defaultConfig.hero_title],
+            ['hero_subtitle', cfg.hero_subtitle || defaultConfig.hero_subtitle],
+            ['cta_text', cfg.cta_text || defaultConfig.cta_text]
+          ])
+        });
+      }
+      
+      // Initialize Data SDK
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+      
+      // Load saved user
+      const savedUser = localStorage.getItem('wwm_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateAuthUI();
+      }
+      
+      // Render initial content
+      renderPackages();
+      applyConfig();
+    }
+    
+    function applyConfig() {
+      const heroTitle = document.getElementById('hero-title');
+      const heroSubtitle = document.getElementById('hero-subtitle');
+      const heroCta = document.getElementById('hero-cta');
+      
+      if (heroTitle) {
+        heroTitle.innerHTML = `Curate Your<br><span class="text-gold-400">${config.hero_title || defaultConfig.hero_title}</span>`;
+      }
+      if (heroSubtitle) {
+        heroSubtitle.textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+      }
+      if (heroCta) {
+        heroCta.textContent = config.cta_text || defaultConfig.cta_text;
+      }
+    }
+    
+    // ========================================
+    // NAVIGATION
+    // ========================================
+    
+    function navigateTo(page) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      
+      // Show target page
+      const targetPage = document.getElementById(`page-${page}`);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.scrollTop = 0;
+      }
+      
+      // Close mobile menu
+      document.getElementById('mobile-menu').classList.add('hidden');
+      
+      // Page-specific logic
+      if (page === 'packages') {
+        renderPackages();
+      } else if (page === 'customer-dashboard') {
+        if (!currentUser) {
+          navigateTo('login');
+          return;
+        }
+        updateCustomerDashboard();
+      } else if (page === 'vendor-dashboard') {
+        if (!currentUser || currentUser.role !== 'vendor') {
+          navigateTo('login');
+          return;
+        }
+        updateVendorDashboard();
+      } else if (page === 'admin-dashboard') {
+        if (!currentUser || currentUser.role !== 'admin') {
+          navigateTo('login');
+          return;
+        }
+        updateAdminDashboard();
+      }
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+    
+    function toggleMobileMenu() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    }
+    
+    function toggleUserDropdown() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('user-dropdown');
+      const menu = document.getElementById('user-menu');
+      if (dropdown && menu && !menu.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+    
+    // ========================================
+    // AUTHENTICATION
+    // ========================================
+    
+    function updateAuthUI() {
+      const authButtons = document.getElementById('auth-buttons');
+      const userMenu = document.getElementById('user-menu');
+      const userNameDisplay = document.getElementById('user-name-display');
+      
+      if (currentUser) {
+        authButtons.classList.add('hidden');
+        userMenu.classList.remove('hidden');
+        userNameDisplay.textContent = currentUser.name;
+        
+        // Show/hide role-specific menu items
+        document.querySelectorAll('[data-role]').forEach(el => {
+          if (el.dataset.role === currentUser.role || currentUser.role === 'admin') {
+            el.classList.remove('hidden');
+          } else {
+            el.classList.add('hidden');
+          }
+        });
+        
+        // Always show customer dashboard
+        document.querySelector('[data-role="customer"]').classList.remove('hidden');
+      } else {
+        authButtons.classList.remove('hidden');
+        userMenu.classList.add('hidden');
+      }
+    }
+    
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      
+      // Find user in data
+      const users = allData.filter(d => d.type === 'user' && d.email === email);
+      
+      if (users.length > 0) {
+        currentUser = users[0];
+        localStorage.setItem('wwm_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        showToast('Welcome back!', 'success');
+        
+        // Navigate based on role
+        if (currentUser.role === 'admin') {
+          navigateTo('admin-dashboard');
+        } else if (currentUser.role === 'vendor') {
+          navigateTo('vendor-dashboard');
+        } else {
+          navigateTo('customer-dashboard');
+        }
+      } else {
+        // Demo: Create user for testing
+        const demoUser = {
+          type: 'user',
+          name: email.split('@')[0],
+          email: email,
+          role: email.includes('admin') ? 'admin' : email.includes('vendor') ? 'vendor' : 'customer',
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+        
+        if (allData.length < 999) {
+          const result = await window.dataSdk.create(demoUser);
+          if (result.isOk) {
+            currentUser = demoUser;
+            localStorage.setItem('wwm_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            showToast('Signed in successfully!', 'success');
+            navigateTo('customer-dashboard');
+          }
+        } else {
+          currentUser = demoUser;
+          localStorage.setItem('wwm_user', JSON.stringify(currentUser));
+          updateAuthUI();
+          showToast('Signed in!', 'success');
+          navigateTo('customer-dashboard');
+        }
+      }
+    });
+    
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('register-name').value;
+      const email = document.getElementById('register-email').value;
+      const phone = document.getElementById('register-phone').value;
+      
+      if (allData.length >= 999) {
+        showToast('Registration limit reached', 'error');
+        return;
+      }
+      
+      const userData = {
+        type: 'user',
+        name,
+        email,
+        phone,
+        role: 'customer',
+        status: 'active',
+        createdAt: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.create(userData);
+      
+      if (result.isOk) {
+        currentUser = userData;
+        localStorage.setItem('wwm_user', JSON.stringify(currentUser));
+        updateAuthUI();
+        showToast('Account created successfully!', 'success');
+        navigateTo('customer-dashboard');
+      } else {
+        showToast('Registration failed', 'error');
+      }
+    });
+    
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('wwm_user');
+      updateAuthUI();
+      navigateTo('home');
+      showToast('Signed out successfully', 'success');
+    }
+    
+    // ========================================
+    // PACKAGES
+    // ========================================
+    
+    let currentFilter = 'all';
+    
+    function filterPackages(category) {
+      currentFilter = category;
+      
+      // Update filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === category) {
+          btn.classList.add('bg-gold-500', 'text-luxury-black');
+          btn.classList.remove('text-gold-300');
+        } else {
+          btn.classList.remove('bg-gold-500', 'text-luxury-black');
+          btn.classList.add('text-gold-300');
+        }
+      });
+      
+      renderPackages();
+      navigateTo('packages');
+    }
+    
+    function renderPackages() {
+      const grid = document.getElementById('packages-grid');
+      if (!grid) return;
+      
+      // Combine static packages with any custom ones from data
+      const customPackages = allData.filter(d => d.type === 'package');
+      const allPackages = [...staticPackages, ...customPackages.map(p => ({
+        id: p.__backendId,
+        name: p.name,
+        category: p.category,
+        description: p.description,
+        basePrice: p.basePrice,
+        image: 'custom',
+        services: p.services ? p.services.split(',') : [],
+        tiers: {
+          essential: { price: p.basePrice, includes: ['Basic Package'] },
+          premium: { price: p.basePrice * 1.6, includes: ['Premium Package'] },
+          luxury: { price: p.basePrice * 2.5, includes: ['Luxury Package'] }
+        }
+      }))];
+      
+      const filtered = currentFilter === 'all' 
+        ? allPackages 
+        : allPackages.filter(p => p.category === currentFilter);
+      
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 text-gray-500">
+            <p>No packages available in this category</p>
+          </div>
+        `;
+        return;
+      }
+      
+      grid.innerHTML = filtered.map(pkg => `
+        <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 border border-gold-100 cursor-pointer" onclick="viewPackage('${pkg.id}')">
+          <div class="aspect-[4/3] bg-gradient-to-br ${getPackageGradient(pkg.category)} relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center">
+              ${getPackageIcon(pkg.category)}
+            </div>
+            <div class="absolute top-4 right-4">
+              <span class="px-3 py-1 bg-white/90 rounded-full text-xs font-medium text-luxury-black capitalize">${pkg.category}</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="font-serif text-xl text-luxury-black mb-2 group-hover:text-gold-600 transition">${pkg.name}</h3>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">${pkg.description}</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-400 text-xs">Starting from</span>
+                <p class="font-serif text-xl text-gold-600">GHS ${pkg.basePrice.toLocaleString()}</p>
+              </div>
+              <button class="px-4 py-2 bg-luxury-black text-gold-400 rounded-lg text-sm hover:bg-luxury-charcoal transition">
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function getPackageGradient(category) {
+      const gradients = {
+        date: 'from-rose-200 to-rose-300',
+        party: 'from-purple-200 to-purple-300',
+        trip: 'from-blue-200 to-blue-300',
+        custom: 'from-gold-200 to-gold-300'
+      };
+      return gradients[category] || gradients.custom;
+    }
+    
+    function getPackageIcon(category) {
+      const icons = {
+        date: '<svg class="w-20 h-20 text-rose-600/30" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+        party: '<svg class="w-20 h-20 text-purple-600/30" fill="currentColor" viewBox="0 0 24 24"><path d="M12 6c1.11 0 2-.9 2-2 0-.38-.1-.73-.29-1.03L12 0l-1.71 2.97c-.19.3-.29.65-.29 1.03 0 1.1.9 2 2 2zm4.6 9.99l-1.07-1.07-1.08 1.07c-1.3 1.3-3.58 1.31-4.89 0l-1.07-1.07-1.09 1.07C6.75 16.64 5.88 17 4.96 17c-.73 0-1.4-.23-1.96-.61V21c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-4.61c-.56.38-1.23.61-1.96.61-.92 0-1.79-.36-2.44-1.01zM18 9h-5V7h-2v2H6c-1.66 0-3 1.34-3 3v1.54c0 1.08.88 1.96 1.96 1.96.52 0 1.02-.2 1.38-.57l2.14-2.13 2.13 2.13c.74.74 2.03.74 2.77 0l2.14-2.13 2.13 2.13c.37.37.86.57 1.38.57 1.08 0 1.96-.88 1.96-1.96V12C21 10.34 19.66 9 18 9z"/></svg>',
+        trip: '<svg class="w-20 h-20 text-blue-600/30" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>',
+        custom: '<svg class="w-20 h-20 text-gold-600/30" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>'
+      };
+      return icons[category] || icons.custom;
+    }
+    
+    function viewPackage(packageId) {
+      // Find package (check static first, then custom)
+      selectedPackage = staticPackages.find(p => p.id === packageId);
+      if (!selectedPackage) {
+        const customPkg = allData.find(d => d.type === 'package' && d.__backendId === packageId);
+        if (customPkg) {
+          selectedPackage = {
+            id: customPkg.__backendId,
+            name: customPkg.name,
+            category: customPkg.category,
+            description: customPkg.description,
+            basePrice: customPkg.basePrice,
+            services: customPkg.services ? customPkg.services.split(',') : [],
+            tiers: {
+              essential: { price: customPkg.basePrice, includes: ['Basic Package'] },
+              premium: { price: Math.round(customPkg.basePrice * 1.6), includes: ['Premium Package'] },
+              luxury: { price: Math.round(customPkg.basePrice * 2.5), includes: ['Luxury Package'] }
+            }
+          };
+        }
+      }
+      
+      if (!selectedPackage) return;
+      
+      const content = document.getElementById('package-detail-content');
+      content.innerHTML = `
+        <div class="bg-luxury-black pb-16">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <button onclick="navigateTo('packages')" class="flex items-center gap-2 text-gold-400 hover:text-gold-300 mb-8">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              Back to Experiences
+            </button>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div>
+                <span class="text-gold-400 text-sm tracking-widest uppercase">${selectedPackage.category}</span>
+                <h1 class="font-serif text-4xl sm:text-5xl text-white mt-4 mb-6">${selectedPackage.name}</h1>
+                <p class="text-gold-200/80 text-lg leading-relaxed mb-8">${selectedPackage.description}</p>
+                
+                <div class="bg-luxury-charcoal rounded-xl p-6 border border-gold-500/20 mb-8">
+                  <h3 class="text-gold-400 font-medium mb-4">What's Included</h3>
+                  <ul class="space-y-3">
+                    ${selectedPackage.services.map(s => `
+                      <li class="flex items-center gap-3 text-white">
+                        <svg class="w-5 h-5 text-gold-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L18 9l-9 9z"/></svg>
+                        ${s.trim()}
+                      </li>
+                    `).join('')}
+                  </ul>
+                </div>
+              </div>
+              
+              <div>
+                <div class="bg-luxury-charcoal rounded-2xl p-8 border border-gold-500/20 sticky top-24">
+                  <h3 class="font-serif text-2xl text-white mb-6">Choose Your Tier</h3>
+                  
+                  <div class="space-y-4 mb-8">
+                    ${Object.entries(selectedPackage.tiers).map(([tier, data]) => `
+                      <label class="block cursor-pointer">
+                        <input type="radio" name="package-tier" value="${tier}" class="hidden peer" ${tier === 'premium' ? 'checked' : ''}>
+                        <div class="p-4 rounded-xl border-2 border-gold-500/20 peer-checked:border-gold-500 peer-checked:bg-gold-500/10 transition">
+                          <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium capitalize">${tier}</span>
+                            <span class="font-serif text-xl text-gold-400">GHS ${data.price.toLocaleString()}</span>
+                          </div>
+                          <p class="text-gray-400 text-sm">${data.includes.join(' • ')}</p>
+                        </div>
+                      </label>
+                    `).join('')}
+                  </div>
+                  
+                  <button onclick="startBooking()" class="w-full py-4 bg-gold-500 hover:bg-gold-400 text-luxury-black font-medium rounded-lg transition text-lg">
+                    Book This Experience
+                  </button>
+                  
+                  <p class="text-center text-gray-500 text-sm mt-4">
+                    Secure payment • Instant confirmation
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      navigateTo('package-detail');
+    }
+    
+    // ========================================
+    // BOOKING FLOW
+    // ========================================
+    
+    function startBooking() {
+      if (!currentUser) {
+        showToast('Please sign in to book', 'warning');
+        navigateTo('login');
+        return;
+      }
+      
+      if (!selectedPackage) return;
+      
+      // Get selected tier
+      const tierInput = document.querySelector('input[name="package-tier"]:checked');
+      const selectedTier = tierInput ? tierInput.value : 'premium';
+      
+      currentBooking = {
+        packageId: selectedPackage.id,
+        packageName: selectedPackage.name,
+        tier: selectedTier,
+        amount: selectedPackage.tiers[selectedTier].price
+      };
+      
+      document.getElementById('booking-package-name').textContent = selectedPackage.name;
+      
+      // Set min date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('booking-date').min = tomorrow.toISOString().split('T')[0];
+      
+      navigateTo('booking');
+      goToBookingStep(1);
+    }
+    
+    function goToBookingStep(step) {
+      document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+      document.getElementById(`booking-step-${step}`).classList.add('active');
+      
+      document.querySelectorAll('.booking-progress-step').forEach(s => {
+        const stepNum = parseInt(s.dataset.step);
+        const circle = s.querySelector('div');
+        const text = s.querySelector('span');
+        
+        if (stepNum <= step) {
+          circle.classList.remove('bg-luxury-dark', 'text-gold-500', 'border', 'border-gold-500/30');
+          circle.classList.add('bg-gold-500', 'text-luxury-black');
+          if (text) {
+            text.classList.remove('text-gray-500');
+            text.classList.add('text-gold-300');
+          }
+        } else {
+          circle.classList.add('bg-luxury-dark', 'text-gold-500', 'border', 'border-gold-500/30');
+          circle.classList.remove('bg-gold-500', 'text-luxury-black');
+          if (text) {
+            text.classList.add('text-gray-500');
+            text.classList.remove('text-gold-300');
+          }
+        }
+      });
+      
+      if (step === 3) {
+        updateBookingSummary();
+      }
+    }
+    
+    document.getElementById('booking-form-step1').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      currentBooking.tier = document.getElementById('booking-tier').value;
+      currentBooking.date = document.getElementById('booking-date').value;
+      currentBooking.time = document.getElementById('booking-time').value;
+      currentBooking.guests = parseInt(document.getElementById('booking-guests').value);
+      
+      // Update amount based on tier
+      if (selectedPackage && selectedPackage.tiers[currentBooking.tier]) {
+        currentBooking.amount = selectedPackage.tiers[currentBooking.tier].price;
+      }
+      
+      goToBookingStep(2);
+    });
+    
+    document.getElementById('booking-form-step2').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      currentBooking.notes = document.getElementById('booking-notes').value;
+      
+      // Calculate add-ons
+      let addons = 0;
+      if (document.getElementById('addon-photography').checked) addons += 500;
+      if (document.getElementById('addon-flowers').checked) addons += 300;
+      if (document.getElementById('addon-transport').checked) addons += 800;
+      
+      currentBooking.addons = addons;
+      currentBooking.amount += addons;
+      
+      goToBookingStep(3);
+    });
+    
+    function updateBookingSummary() {
+      const summary = document.getElementById('booking-summary');
+      
+      const formattedDate = new Date(currentBooking.date).toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      summary.innerHTML = `
+        <div class="flex justify-between text-gray-300">
+          <span>Package</span>
+          <span class="text-white">${currentBooking.packageName}</span>
+        </div>
+        <div class="flex justify-between text-gray-300">
+          <span>Tier</span>
+          <span class="text-white capitalize">${currentBooking.tier}</span>
+        </div>
+        <div class="flex justify-between text-gray-300">
+          <span>Date</span>
+          <span class="text-white">${formattedDate}</span>
+        </div>
+        <div class="flex justify-between text-gray-300">
+          <span>Time</span>
+          <span class="text-white">${currentBooking.time}</span>
+        </div>
+        <div class="flex justify-between text-gray-300">
+          <span>Guests</span>
+          <span class="text-white">${currentBooking.guests}</span>
+        </div>
+        ${currentBooking.addons > 0 ? `
+        <div class="flex justify-between text-gray-300">
+          <span>Add-ons</span>
+          <span class="text-white">GHS ${currentBooking.addons.toLocaleString()}</span>
+        </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('booking-total').textContent = `GHS ${currentBooking.amount.toLocaleString()}`;
+    }
+    
+    async function processPayment() {
+      const payButton = document.getElementById('pay-button');
+      payButton.disabled = true;
+      payButton.innerHTML = `
+        <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Processing...
+      `;
+      
+      // Simulate payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      if (allData.length >= 999) {
+        showToast('Booking limit reached. Please contact support.', 'error');
+        payButton.disabled = false;
+        payButton.innerHTML = `
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          Pay Now
+        `;
+        return;
+      }
+      
+      // Create booking record
+      const bookingData = {
+        type: 'booking',
+        packageId: currentBooking.packageId,
+        packageName: currentBooking.packageName,
+        tier: currentBooking.tier,
+        date: currentBooking.date,
+        time: currentBooking.time,
+        guests: currentBooking.guests,
+        notes: currentBooking.notes || '',
+        amount: currentBooking.amount,
+        customerId: currentUser.__backendId || currentUser.email,
+        status: 'confirmed',
+        paymentStatus: 'escrow',
+        paymentRef: 'PAY-' + Date.now(),
+        createdAt: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.create(bookingData);
+      
+      if (result.isOk) {
+        showToast('Payment successful!', 'success');
+        navigateTo('booking-success');
+      } else {
+        showToast('Payment failed. Please try again.', 'error');
+        payButton.disabled = false;
+        payButton.innerHTML = `
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          Pay Now
+        `;
+      }
+    }
+    
+    // ========================================
+    // VENDOR APPLICATION
+    // ========================================
+    
+    document.getElementById('vendor-application-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Application limit reached', 'error');
+        return;
+      }
+      
+      const vendorData = {
+        type: 'vendor',
+        name: document.getElementById('vendor-name').value,
+        businessName: document.getElementById('vendor-business').value,
+        email: document.getElementById('vendor-email').value,
+        phone: document.getElementById('vendor-phone').value,
+        serviceType: document.getElementById('vendor-service-type').value,
+        location: document.getElementById('vendor-location').value,
+        description: document.getElementById('vendor-description').value,
+        status: 'pending',
+        verified: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.create(vendorData);
+      
+      if (result.isOk) {
+        showToast('Application submitted! We\'ll review it soon.', 'success');
+        e.target.reset();
+        navigateTo('home');
+      } else {
+        showToast('Submission failed. Please try again.', 'error');
+      }
+    });
+    
+    // ========================================
+    // DASHBOARDS
+    // ========================================
+    
+    function updateDashboards() {
+      updateCustomerDashboard();
+      updateVendorDashboard();
+      updateAdminDashboard();
+      renderPackages();
+    }
+    
+    function updateCustomerDashboard() {
+      if (!currentUser) return;
+      
+      const bookings = allData.filter(d => 
+        d.type === 'booking' && 
+        (d.customerId === currentUser.__backendId || d.customerId === currentUser.email)
+      );
+      
+      const upcoming = bookings.filter(b => b.status === 'confirmed' || b.status === 'pending');
+      const completed = bookings.filter(b => b.status === 'completed');
+      const totalSpent = bookings.reduce((sum, b) => sum + (b.amount || 0), 0);
+      
+      document.getElementById('customer-upcoming-count').textContent = upcoming.length;
+      document.getElementById('customer-completed-count').textContent = completed.length;
+      document.getElementById('customer-total-spent').textContent = `GHS ${totalSpent.toLocaleString()}`;
+      
+      const listEl = document.getElementById('customer-bookings-list');
+      
+      if (bookings.length === 0) {
+        listEl.innerHTML = `
+          <div class="px-6 py-12 text-center text-gray-500">
+            <p>No bookings yet</p>
+            <button onclick="navigateTo('packages')" class="mt-4 text-gold-600 hover:text-gold-700 font-medium">Browse Experiences →</button>
+          </div>
+        `;
+        return;
+      }
+      
+      listEl.innerHTML = bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(booking => `
+        <div class="px-6 py-4 flex items-center justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <h3 class="font-medium text-luxury-black truncate">${booking.packageName}</h3>
+            <p class="text-gray-500 text-sm">${new Date(booking.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} at ${booking.time}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-serif text-lg text-gold-600">GHS ${(booking.amount || 0).toLocaleString()}</p>
+            <span class="inline-block px-2 py-1 rounded text-xs font-medium ${getStatusClasses(booking.status)}">${booking.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function updateVendorDashboard() {
+      if (!currentUser || currentUser.role !== 'vendor') return;
+      
+      const vendorData = allData.find(d => d.type === 'vendor' && d.email === currentUser.email);
+      
+      if (vendorData) {
+        const badge = document.getElementById('vendor-status-badge');
+        if (vendorData.verified) {
+          badge.className = 'px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium';
+          badge.textContent = 'Verified';
+        } else if (vendorData.status === 'approved') {
+          badge.className = 'px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium';
+          badge.textContent = 'Approved';
+        } else {
+          badge.className = 'px-4 py-2 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium';
+          badge.textContent = 'Pending Verification';
+        }
+        
+        document.getElementById('vendor-profile-info').innerHTML = `
+          <div class="space-y-3">
+            <div>
+              <p class="text-gray-500 text-xs">Business Name</p>
+              <p class="text-luxury-black font-medium">${vendorData.businessName}</p>
+            </div>
+            <div>
+              <p class="text-gray-500 text-xs">Service Type</p>
+              <p class="text-luxury-black capitalize">${vendorData.serviceType}</p>
+            </div>
+            <div>
+              <p class="text-gray-500 text-xs">Location</p>
+              <p class="text-luxury-black">${vendorData.location}</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+    function updateAdminDashboard() {
+      if (!currentUser || currentUser.role !== 'admin') return;
+      
+      const bookings = allData.filter(d => d.type === 'booking');
+      const vendors = allData.filter(d => d.type === 'vendor');
+      const pendingVendors = vendors.filter(v => v.status === 'pending');
+      const activeVendors = vendors.filter(v => v.status === 'approved' || v.verified);
+      const totalRevenue = bookings.filter(b => b.paymentStatus === 'escrow').reduce((sum, b) => sum + (b.amount || 0), 0);
+      
+      document.getElementById('admin-total-bookings').textContent = bookings.length;
+      document.getElementById('admin-active-vendors').textContent = activeVendors.length;
+      document.getElementById('admin-pending-vendors').textContent = pendingVendors.length;
+      document.getElementById('admin-total-revenue').textContent = `GHS ${totalRevenue.toLocaleString()}`;
+      
+      // Vendor applications list
+      const vendorsList = document.getElementById('admin-vendors-list');
+      if (pendingVendors.length === 0) {
+        vendorsList.innerHTML = `
+          <div class="px-6 py-12 text-center text-gray-500">
+            <p>No pending vendor applications</p>
+          </div>
+        `;
+      } else {
+        vendorsList.innerHTML = pendingVendors.map(vendor => `
+          <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="font-medium text-luxury-black">${vendor.businessName}</h3>
+              <p class="text-gray-500 text-sm">${vendor.name} • ${vendor.serviceType} • ${vendor.location}</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="approveVendor('${vendor.__backendId}')" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition">Approve</button>
+              <button onclick="rejectVendor('${vendor.__backendId}')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition">Reject</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Bookings list
+      const bookingsList = document.getElementById('admin-bookings-list');
+      if (bookings.length === 0) {
+        bookingsList.innerHTML = `
+          <div class="px-6 py-12 text-center text-gray-500">
+            <p>No bookings yet</p>
+          </div>
+        `;
+      } else {
+        bookingsList.innerHTML = bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(booking => `
+          <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex-1">
+              <h3 class="font-medium text-luxury-black">${booking.packageName}</h3>
+              <p class="text-gray-500 text-sm">${new Date(booking.date).toLocaleDateString()} • ${booking.guests} guests</p>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="font-serif text-lg text-gold-600">GHS ${(booking.amount || 0).toLocaleString()}</span>
+              <span class="px-2 py-1 rounded text-xs font-medium ${getStatusClasses(booking.status)}">${booking.status}</span>
+              ${booking.status === 'confirmed' && booking.paymentStatus === 'escrow' ? `
+                <button onclick="releasePayment('${booking.__backendId}')" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs transition">Release Payment</button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Packages list
+      renderAdminPackages();
+    }
+    
+    function renderAdminPackages() {
+      const packagesList = document.getElementById('admin-packages-list');
+      const customPackages = allData.filter(d => d.type === 'package');
+      const allPackages = [...staticPackages, ...customPackages.map(p => ({
+        id: p.__backendId,
+        name: p.name,
+        category: p.category,
+        basePrice: p.basePrice,
+        isCustom: true
+      }))];
+      
+      packagesList.innerHTML = allPackages.map(pkg => `
+        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="text-xs font-medium text-gray-500 uppercase">${pkg.category}</span>
+              <h3 class="font-medium text-luxury-black mt-1">${pkg.name}</h3>
+              <p class="text-gold-600 font-serif mt-2">GHS ${pkg.basePrice.toLocaleString()}</p>
+            </div>
+            ${pkg.isCustom ? `
+              <button onclick="deletePackage('${pkg.id}')" class="text-red-500 hover:text-red-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function getStatusClasses(status) {
+      const classes = {
+        pending: 'bg-yellow-100 text-yellow-700',
+        confirmed: 'bg-blue-100 text-blue-700',
+        completed: 'bg-green-100 text-green-700',
+        cancelled: 'bg-red-100 text-red-700'
+      };
+      return classes[status] || classes.pending;
+    }
+    
+    function switchAdminTab(tab) {
+      document.querySelectorAll('.admin-tab').forEach(t => {
+        t.classList.remove('border-gold-500', 'text-gold-600');
+        t.classList.add('border-transparent', 'text-gray-500');
+      });
+      
+      document.querySelector(`.admin-tab[data-tab="${tab}"]`).classList.remove('border-transparent', 'text-gray-500');
+      document.querySelector(`.admin-tab[data-tab="${tab}"]`).classList.add('border-gold-500', 'text-gold-600');
+      
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`admin-tab-${tab}`).classList.remove('hidden');
+    }
+    
+    async function approveVendor(vendorId) {
+      const vendor = allData.find(d => d.__backendId === vendorId);
+      if (!vendor) return;
+      
+      vendor.status = 'approved';
+      vendor.verified = true;
+      vendor.updatedAt = new Date().toISOString();
+      
+      const result = await window.dataSdk.update(vendor);
+      if (result.isOk) {
+        showToast('Vendor approved!', 'success');
+      }
+    }
+    
+    async function rejectVendor(vendorId) {
+      const vendor = allData.find(d => d.__backendId === vendorId);
+      if (!vendor) return;
+      
+      vendor.status = 'rejected';
+      vendor.updatedAt = new Date().toISOString();
+      
+      const result = await window.dataSdk.update(vendor);
+      if (result.isOk) {
+        showToast('Vendor rejected', 'success');
+      }
+    }
+    
+    async function releasePayment(bookingId) {
+      const booking = allData.find(d => d.__backendId === bookingId);
+      if (!booking) return;
+      
+      booking.status = 'completed';
+      booking.paymentStatus = 'released';
+      booking.updatedAt = new Date().toISOString();
+      
+      const result = await window.dataSdk.update(booking);
+      if (result.isOk) {
+        showToast('Payment released to vendor!', 'success');
+      }
+    }
+    
+    // ========================================
+    // PACKAGE MANAGEMENT
+    // ========================================
+    
+    function showAddPackageModal() {
+      document.getElementById('add-package-modal').classList.add('active');
+    }
+    
+    function closeAddPackageModal() {
+      document.getElementById('add-package-modal').classList.remove('active');
+    }
+    
+    document.getElementById('add-package-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (allData.length >= 999) {
+        showToast('Package limit reached', 'error');
+        return;
+      }
+      
+      const packageData = {
+        type: 'package',
+        name: document.getElementById('package-name').value,
+        category: document.getElementById('package-category').value,
+        description: document.getElementById('package-description').value,
+        basePrice: parseInt(document.getElementById('package-base-price').value),
+        services: document.getElementById('package-services').value,
+        createdAt: new Date().toISOString()
+      };
+      
+      const result = await window.dataSdk.create(packageData);
+      
+      if (result.isOk) {
+        showToast('Package created!', 'success');
+        closeAddPackageModal();
+        e.target.reset();
+      } else {
+        showToast('Failed to create package', 'error');
+      }
+    });
+    
+    async function deletePackage(packageId) {
+      const pkg = allData.find(d => d.__backendId === packageId);
+      if (!pkg) return;
+      
+      const result = await window.dataSdk.delete(pkg);
+      if (result.isOk) {
+        showToast('Package deleted', 'success');
+      }
+    }
+    
+    // ========================================
+    // UTILITIES
+    // ========================================
+    
+    function showToast(message, type = 'info') {
+      const colors = {
+        success: 'bg-green-600 text-white',
+        error: 'bg-red-600 text-white',
+        warning: 'bg-yellow-500 text-luxury-black',
+        info: 'bg-gold-500 text-luxury-black'
+      };
+      
+      const toast = document.createElement('div');
+      toast.className = `toast ${colors[type]}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+    
+    // Initialize app
+    initializeApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cddb95a1065033a',t:'MTc3MTA4NDI1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

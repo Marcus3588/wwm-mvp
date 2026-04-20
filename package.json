@@ -1,0 +1,24 @@
+{
+  "name": "wwm",
+  "version": "1.0.0",
+  "description": "A three-sided marketplace for booking curated life moments: dates, parties, birthdays, proposals, trips, and celebrations. Built for Ghana with Paystack (card + mobile money) and Firebase Auth.",
+  "main": "strip.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marcus3588/wwm-mvp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Marcus3588/wwm-mvp/issues"
+  },
+  "homepage": "https://github.com/Marcus3588/wwm-mvp#readme",
+  "dependencies": {
+    "strip-comments": "^2.0.1"
+  }
+}

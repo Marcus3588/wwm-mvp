@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --luxury-black: #0a0a0a;
+  --luxury-gold: #c9942e;
+  --luxury-cream: #f5f0e8;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--luxury-black);
+  color: var(--luxury-cream);
+}
