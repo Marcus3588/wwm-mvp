@@ -3,12 +3,17 @@ import PackageGrid from '@/components/PackageGrid';
 import SearchBar from '@/components/SearchBar';
 
 export default async function HomePage() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/packages/featured`,
-    { cache: 'no-store' }
-  );
-  const data = await res.json().catch(() => ({ packages: [] }));
-  const packages = data.packages || [];
+  let packages = [];
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/packages/featured`,
+      { cache: 'no-store' }
+    );
+    const data = await res.json();
+    packages = data.packages || [];
+  } catch (error) {
+    console.error('Failed to fetch packages:', error);
+  }
 
   return (
     <>
