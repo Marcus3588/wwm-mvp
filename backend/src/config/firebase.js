@@ -6,7 +6,11 @@ let initialized = false;
 function initFirebase() {
   if (initialized) return admin;
 
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+    const buff = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64');
+    const serviceAccount = JSON.parse(buff.toString('utf-8'));
+    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+  } else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
     let serviceAccount = require(path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH));
   
     if (serviceAccount.private_key && serviceAccount.private_key.includes('\\n')) {
