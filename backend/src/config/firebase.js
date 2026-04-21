@@ -9,6 +9,9 @@ function initFirebase() {
   if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
     const buff = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64');
     const serviceAccount = JSON.parse(buff.toString('utf-8'));
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
     admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
   } else if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
     let serviceAccount = require(path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH));
