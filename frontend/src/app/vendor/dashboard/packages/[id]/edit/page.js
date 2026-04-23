@@ -1,10 +1,5 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function EditPackagePage() {
     const router = useRouter();
@@ -152,16 +147,12 @@ export default function EditPackagePage() {
                     </div>
 
                     {/* Section 3: Media */}
-                    <div className="bg-luxury-charcoal/50 border border-luxury-gold-500/10 rounded-3xl p-8 space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-luxury-cream/70 mb-2">Cover Image URL</label>
-                            <input required type="url" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} className="w-full px-5 py-4 bg-black border border-luxury-gold-500/10 rounded-2xl text-white focus:border-luxury-gold-500 outline-none transition" />
-                        </div>
-                        {form.image && (
-                            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-luxury-gold-500/10">
-                                <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
-                            </div>
-                        )}
+                    <div className="bg-luxury-charcoal/50 border border-luxury-gold-500/10 rounded-3xl p-8">
+                        <ImageUpload 
+                            label="Experience Cover Photo"
+                            value={form.image}
+                            onChange={(url) => setForm({ ...form, image: url })}
+                        />
                     </div>
 
                     {/* Submit */}
