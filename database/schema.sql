@@ -8,6 +8,7 @@ CREATE TYPE vendor_status AS ENUM ('pending', 'approved', 'rejected');
 CREATE TYPE package_category AS ENUM ('date', 'party', 'birthday', 'proposal', 'trip', 'celebration', 'custom');
 CREATE TYPE booking_status AS ENUM ('draft', 'pending_payment', 'paid', 'confirmed', 'in_progress', 'completed', 'cancelled', 'refunded');
 CREATE TYPE payment_status AS ENUM ('pending', 'hold', 'success', 'failed', 'refunded', 'released');
+CREATE TYPE package_status AS ENUM ('draft', 'published', 'archived');
 CREATE TYPE dispute_status AS ENUM ('open', 'in_review', 'resolved', 'closed');
 
 -- Users (Firebase UID linked; profile data in our DB)
@@ -51,11 +52,13 @@ CREATE INDEX idx_vendors_status ON vendors(verification_status);
 -- Packages (curated experiences)
 CREATE TABLE packages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  vendor_id UUID REFERENCES vendors(id) ON DELETE CASCADE,
   slug VARCHAR(128) UNIQUE NOT NULL,
   title VARCHAR(255) NOT NULL,
   short_description TEXT,
   long_description TEXT,
   category package_category NOT NULL,
+  location TEXT,
   images TEXT[] DEFAULT '{}',
   base_price_cents BIGINT NOT NULL CHECK (base_price_cents >= 0),
   currency VARCHAR(3) DEFAULT 'GHS',
@@ -64,10 +67,14 @@ CREATE TABLE packages (
   min_guests INTEGER DEFAULT 1,
   max_guests INTEGER,
   is_featured BOOLEAN DEFAULT false,
+  status package_status NOT NULL DEFAULT 'draft',
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX idx_packages_vendor_id ON packages(vendor_id);
+CREATE INDEX idx_packages_status ON packages(status);
 
 CREATE INDEX idx_packages_category ON packages(category);
 CREATE INDEX idx_packages_featured ON packages(is_featured) WHERE is_featured = true;
