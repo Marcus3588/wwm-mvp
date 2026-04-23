@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import PackageGrid from '@/components/PackageGrid';
 
 export default async function PackagesPage({ searchParams }) {

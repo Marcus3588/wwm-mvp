@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import PackageGrid from '@/components/PackageGrid';
 import SearchBar from '@/components/SearchBar';
