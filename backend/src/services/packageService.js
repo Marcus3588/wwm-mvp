@@ -63,8 +63,12 @@ async function listPackages(filters = {}) {
   let query = `
     SELECT p.*, 
       COALESCE(
-        (SELECT json_agg(json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description, 'price_cents', pt.price_cents, 'sort_order', pt.sort_order))
-         FROM package_tiers pt WHERE pt.package_id = p.id ORDER BY pt.sort_order),
+        (SELECT json_agg(tiers_data) FROM (
+          SELECT id, name, description, price_cents, sort_order 
+          FROM package_tiers pt 
+          WHERE pt.package_id = p.id 
+          ORDER BY sort_order
+        ) tiers_data),
         '[]'::json
       ) AS tiers
     FROM packages p
@@ -130,8 +134,12 @@ async function getPackageById(id) {
     const r = await pool.query(
       `SELECT p.*, 
       COALESCE(
-        (SELECT json_agg(json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description, 'price_cents', pt.price_cents, 'sort_order', pt.sort_order))
-         FROM package_tiers pt WHERE pt.package_id = p.id ORDER BY pt.sort_order),
+        (SELECT json_agg(tiers_data) FROM (
+          SELECT id, name, description, price_cents, sort_order 
+          FROM package_tiers pt 
+          WHERE pt.package_id = p.id 
+          ORDER BY sort_order
+        ) tiers_data),
         '[]'::json
       ) AS tiers
     FROM packages p WHERE p.id = $1`,
@@ -155,8 +163,12 @@ async function getPackageBySlug(slug) {
     const r = await pool.query(
       `SELECT p.*, 
       COALESCE(
-        (SELECT json_agg(json_build_object('id', pt.id, 'name', pt.name, 'description', pt.description, 'price_cents', pt.price_cents, 'sort_order', pt.sort_order))
-         FROM package_tiers pt WHERE pt.package_id = p.id ORDER BY pt.sort_order),
+        (SELECT json_agg(tiers_data) FROM (
+          SELECT id, name, description, price_cents, sort_order 
+          FROM package_tiers pt 
+          WHERE pt.package_id = p.id 
+          ORDER BY sort_order
+        ) tiers_data),
         '[]'::json
       ) AS tiers
     FROM packages p WHERE p.slug = $1 AND p.is_active = true`,
