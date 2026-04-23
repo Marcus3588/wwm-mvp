@@ -11,7 +11,17 @@ function PackageCard({ pkg }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
-  const images = pkg.images?.length ? pkg.images : ['https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=800'];
+  let images = [];
+  if (Array.isArray(pkg.images)) {
+    images = pkg.images;
+  } else if (typeof pkg.images === 'string') {
+    // Handle PostgreSQL string array format: {url1,url2}
+    images = pkg.images.replace(/{|}/g, '').split(',');
+  }
+
+  if (!images.length || !images[0]) {
+    images = ['https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=800'];
+  }
 
   const nextImage = (e) => {
     e.preventDefault();
