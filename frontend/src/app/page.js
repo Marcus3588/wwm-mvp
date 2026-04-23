@@ -5,15 +5,21 @@ import SearchBar from '@/components/SearchBar';
 
 export default async function HomePage() {
   let packages = [];
+  let errorMsg = null;
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'}/packages/featured`,
       { cache: 'no-store' }
     );
-    const data = await res.json();
-    packages = data.packages || [];
+    if (!res.ok) {
+      errorMsg = `Backend Error: ${res.status} ${res.statusText}`;
+    } else {
+      const data = await res.json();
+      packages = data.packages || [];
+    }
   } catch (error) {
     console.error('Failed to fetch packages:', error);
+    errorMsg = `Fetch Failed: ${error.message}`;
   }
 
   return (
@@ -73,6 +79,17 @@ export default async function HomePage() {
           <p className="text-center text-luxury-cream/70 max-w-xl mx-auto mb-12">
             Hand-picked packages for your most memorable moments.
           </p>
+          
+          {errorMsg && (
+            <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-xl mb-12 text-center max-w-lg mx-auto">
+              <p className="font-semibold mb-1">⚠️ Connection Problem</p>
+              <p className="text-sm opacity-80">{errorMsg}</p>
+              <p className="text-xs mt-2 italic underline text-red-500/70 cursor-help" title="Check Render logs for 'Tenant or user not found'">
+                Check your Render DATABASE_URL settings
+              </p>
+            </div>
+          )}
+
           <PackageGrid packages={packages} />
           <div className="text-center mt-12">
             <Link
