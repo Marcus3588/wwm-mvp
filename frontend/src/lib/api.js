@@ -24,8 +24,11 @@ export const api = {
       return apiFetch(`/packages${q ? '?' + q : ''}`);
     },
     featured: () => apiFetch('/packages/featured'),
+    vendorMe: () => apiFetch('/packages/vendor/me'),
     get: (idOrSlug) => apiFetch(`/packages/${idOrSlug}`),
     create: (body) => apiFetch('/packages', { method: 'POST', body: JSON.stringify(body) }),
+    update: (id, body) => apiFetch(`/packages/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+    delete: (id) => apiFetch(`/packages/${id}`, { method: 'DELETE' }),
   },
   auth: {
     register: (body) => apiFetch('/auth/register', { method: 'POST', body: JSON.stringify(body) }),

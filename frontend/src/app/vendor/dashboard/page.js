@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
+import VendorPackageList from '@/components/VendorPackageList';
 
 const statusConfig = {
   paid: { label: 'Awaiting Confirmation', color: 'bg-amber-500/20 text-amber-300', dot: 'bg-amber-400' },
@@ -34,35 +35,40 @@ export default function VendorDashboardPage() {
   const { user, profile } = useAuth();
   const [vendor, setVendor] = useState(null);
   const [bookings, setBookings] = useState([]);
+  const [vendorPackages, setVendorPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('bookings');
 
+  const loadData = async () => {
+    try {
+      const vendorRes = await api.vendors.me();
+      setVendor(vendorRes.vendor);
+    } catch (err) {
+      console.error('Vendor profile fetch failed:', err);
+      if (process.env.NODE_ENV !== 'production') {
+        setVendor({ business_name: 'Luxe Events (Mock)', verification_status: 'approved' });
+      } else {
+        setVendor(null);
+      }
+    }
+
+    try {
+      const [bookingsRes, packagesRes] = await Promise.all([
+        api.bookings.vendor(),
+        api.packages.vendorMe()
+      ]);
+      setBookings(bookingsRes.bookings || []);
+      setVendorPackages(packagesRes.packages || []);
+    } catch (err) {
+      console.error('Dashboard data fetch failed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) { router.push('/login?redirect=/vendor/dashboard'); return; }
-    const load = async () => {
-      try {
-        const vendorRes = await api.vendors.me();
-        setVendor(vendorRes.vendor);
-      } catch (err) {
-        console.error('Vendor profile fetch failed:', err);
-        if (process.env.NODE_ENV !== 'production') {
-          setVendor({ business_name: 'Luxe Events (Mock)', verification_status: 'approved' });
-        } else {
-          setVendor(null);
-        }
-      }
-
-      try {
-        const bookingsRes = await api.bookings.vendor();
-        setBookings(bookingsRes.bookings || []);
-      } catch (err) {
-        console.error('Vendor bookings fetch failed:', err);
-        setBookings([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    loadData();
   }, [user, router]);
 
   const handleAccept = async (id) => {
@@ -244,20 +250,11 @@ export default function VendorDashboardPage() {
                 </Link>
               )}
             </div>
-            <div className="py-16 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-luxury-gold-500/10 flex items-center justify-center">
-                <svg className="w-8 h-8 text-luxury-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              </div>
-              <h3 className="font-serif text-xl text-white mb-2">No packages yet</h3>
-              <p className="text-luxury-cream/50 text-sm mb-6">
-                {isApproved ? 'Create your first luxury experience package to start receiving bookings.' : 'Your account needs to be approved before you can list packages.'}
-              </p>
-              {isApproved && (
-                <Link href="/vendor/packages/create" className="inline-block px-6 py-3 bg-luxury-gold-500 hover:bg-luxury-gold-400 text-luxury-black font-semibold rounded-xl text-sm transition">
-                  Create First Package
-                </Link>
-              )}
-            </div>
+            
+            <VendorPackageList 
+              packages={vendorPackages} 
+              onUpdate={loadData}
+            />
           </div>
         )}
       </div>
