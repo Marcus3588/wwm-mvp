@@ -30,9 +30,9 @@ router.get('/me', authenticate, async (req, res) => {
           user: {
             id: 'mock-user-1',
             firebase_uid: req.firebaseUid,
-            email: req.firebaseEmail || 'mockuser@example.com',
-            role: 'customer',
-            full_name: 'Mock Customer'
+            email: req.firebaseEmail || 'mockvendor@example.com',
+            role: 'vendor',
+            full_name: 'Mock Vendor'
           }
         });
       }

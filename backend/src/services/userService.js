@@ -42,9 +42,9 @@ async function getUserByFirebaseUid(firebaseUid) {
       return {
         id: 'mock-user-1',
         firebase_uid: firebaseUid,
-        email: 'mockuser@example.com',
-        role: 'customer',
-        full_name: 'Mock Customer'
+        email: 'mockvendor@example.com',
+        role: 'vendor',
+        full_name: 'Mock Vendor'
       };
     }
     throw err;
