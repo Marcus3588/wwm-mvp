@@ -69,9 +69,22 @@ export default function VendorDashboardPage() {
   useEffect(() => {
     if (authLoading) return;
 
-    if (!user || profile?.role !== 'vendor') {
+    if (!user) {
       router.push('/login');
       return;
+    }
+
+    // In dev, if we have a user but profile failed (DB down), allow anyway
+    if (process.env.NODE_ENV !== 'production') {
+      if (profile && profile.role !== 'vendor') {
+        router.push('/login');
+        return;
+      }
+    } else {
+       if (profile?.role !== 'vendor') {
+        router.push('/login');
+        return;
+      }
     }
 
     loadData();

@@ -28,7 +28,18 @@ export default function CreatePackagePage() {
 
     if (authLoading) return <div className="pt-40 text-center animate-pulse text-luxury-gold-400">Verifying permissions...</div>;
 
-    if (!user || profile?.role !== 'vendor') {
+    if (!user) {
+        if (typeof window !== 'undefined') router.push('/login');
+        return null;
+    }
+
+    // Dev bypass
+    if (process.env.NODE_ENV === 'production' && profile?.role !== 'vendor') {
+        if (typeof window !== 'undefined') router.push('/login');
+        return null;
+    }
+    
+    if (process.env.NODE_ENV !== 'production' && profile && profile.role !== 'vendor') {
         if (typeof window !== 'undefined') router.push('/login');
         return null;
     }

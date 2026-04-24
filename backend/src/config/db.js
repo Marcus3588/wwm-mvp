@@ -9,11 +9,17 @@ if (!connectionString) {
 const poolConfig = {
   connectionString,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  // Force password to be a string (even if empty) to avoid SASL errors in the 'pg' driver
+  password: '', 
 };
 
-// Ensure password is a string if missing from the connection string to avoid driver errors
-if (!connectionString || !connectionString.includes(':')) {
-  poolConfig.password = '';
+// If connection string has a password, pg legacy parser will use it, 
+// but modern Pool often needs the explicit field as a string.
+if (connectionString && connectionString.includes(':')) {
+  const parts = connectionString.split(':');
+  if (parts.length > 2) {
+    // There might be a password in the string, let's let Pool parse it but ensure we don't break logic
+  }
 }
 
 const pool = new Pool(poolConfig);
