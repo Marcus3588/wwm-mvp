@@ -1,3 +1,9 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import ImageUpload from '@/components/ImageUpload';
 
