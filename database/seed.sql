@@ -7,3 +7,28 @@ INSERT INTO packages (id, slug, title, short_description, long_description, cate
   (uuid_generate_v4(), 'weekend-getaway', 'Luxury Weekend Trip', 'Escape to a curated retreat', 'A fully planned weekend including accommodation, activities, and dining. Destinations across Ghana''s finest locations.', 'trip', ARRAY['https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800'], 5000000, 'GHS', '[{"item": "2-night accommodation"}, {"item": "All meals"}, {"item": "Guided activities"}, {"item": "Private transport"}]'::jsonb, 48, 2, 6, false, true),
   (uuid_generate_v4(), 'elegant-party', 'Elegant Party Package', 'Sophisticated celebrations', 'From corporate events to private soirées. Full event planning with premium catering and ambiance.', 'party', ARRAY['https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800'], 2000000, 'GHS', '[{"item": "Venue setup"}, {"item": "Premium catering"}, {"item": "Bar service"}, {"item": "Event coordination"}]'::jsonb, 5, 10, 100, false, true)
 ON CONFLICT (slug) DO NOTHING;
+
+-- Vendors Table
+CREATE TABLE vendors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    role VARCHAR(50) NOT NULL CHECK (role IN ('USER', 'VENDOR')),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Packages Table
+CREATE TABLE packages (
+    id SERIAL PRIMARY KEY,
+    vendor_id INT NOT NULL REFERENCES vendors(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
+    location VARCHAR(255) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    images TEXT[],
+    availability TIMESTAMP,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('draft', 'published')),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);

@@ -1,6 +1,5 @@
 const { initFirebase } = require('../config/firebase');
 
-
 async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -48,4 +47,32 @@ async function optionalAuth(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, optionalAuth };
+function roleMiddleware(requiredRole) {
+  return (req, res, next) => {
+    if (!req.firebaseUid || !req.firebaseEmail) {
+      return res.status(403).json({ error: 'Unauthorized access' });
+    }
+
+    const admin = initFirebase();
+    admin.firestore().collection('users').doc(req.firebaseUid).get()
+      .then((doc) => {
+        if (!doc.exists) {
+          return res.status(403).json({ error: 'User not found' });
+        }
+
+        const userData = doc.data();
+        if (userData.role !== requiredRole) {
+          return res.status(403).json({ error: 'Insufficient permissions' });
+        }
+
+        req.userRole = userData.role;
+        next();
+      })
+      .catch((err) => {
+        console.error('Error verifying role:', err);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+  };
+}
+
+module.exports = { authenticate, optionalAuth, roleMiddleware };

@@ -67,9 +67,13 @@ export default function VendorDashboardPage() {
   };
 
   useEffect(() => {
-    if (!user) { router.push('/login?redirect=/vendor/dashboard'); return; }
+    if (!user || profile?.role !== 'VENDOR') {
+      router.push('/login');
+      return;
+    }
+
     loadData();
-  }, [user, router]);
+  }, [user, profile, router]);
 
   const handleAccept = async (id) => {
     try {

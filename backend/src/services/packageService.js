@@ -1,5 +1,5 @@
 const { pool } = require('../config/db');
-
+const { body, validationResult } = require('express-validator');
 
 const DEV_PACKAGES = [
   {
@@ -59,6 +59,22 @@ const DEV_PACKAGES = [
   },
 ];
 
+const validatePackage = [
+  body('title').notEmpty().withMessage('Title is required'),
+  body('description').notEmpty().withMessage('Description is required'),
+  body('price').isFloat({ gt: 0 }).withMessage('Price must be a positive number'),
+  body('location').notEmpty().withMessage('Location is required'),
+  body('category').notEmpty().withMessage('Category is required'),
+  body('status').isIn(['draft', 'published']).withMessage('Invalid status'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  }
+];
+
 async function listPackages(filters = {}) {
   let query = `
     SELECT p.*, 
@@ -87,6 +103,11 @@ async function listPackages(filters = {}) {
   if (filters.status) {
     query += ` AND p.status = $${i++}`;
     params.push(filters.status);
+  }
+
+  if (filters.vendor_firebase_uid) {
+    query += ` AND p.vendor_id = (SELECT v.id FROM vendors v JOIN users u ON v.user_id = u.id WHERE u.firebase_uid = $${i++})`;
+    params.push(filters.vendor_firebase_uid);
   }
 
   if (filters.vendor_id) {
@@ -292,5 +313,6 @@ module.exports = {
   getPackageBySlug,
   createPackage,
   updatePackage,
-  deletePackage
+  deletePackage,
+  validatePackage
 };
