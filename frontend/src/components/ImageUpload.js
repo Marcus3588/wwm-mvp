@@ -2,8 +2,8 @@
 
 import { useState, useRef } from 'react';
 
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'wwm-luxury';
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'wwm_unsigned';
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
 export default function ImageUpload({ value, onChange, label = "Upload Image" }) {
   const [loading, setLoading] = useState(false);
@@ -13,6 +13,11 @@ export default function ImageUpload({ value, onChange, label = "Upload Image" })
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!CLOUD_NAME || !UPLOAD_PRESET) {
+      setError("Cloudinary configuration missing. Please add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET to your .env.local file.");
+      return;
+    }
 
     if (file.size > 10 * 1024 * 1024) {
       setError("File too large (max 10MB)");
