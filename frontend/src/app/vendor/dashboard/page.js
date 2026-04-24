@@ -32,7 +32,7 @@ function StatCard({ icon, label, value, sub }) {
 
 export default function VendorDashboardPage() {
   const router = useRouter();
-  const { user, profile } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [vendor, setVendor] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [vendorPackages, setVendorPackages] = useState([]);
@@ -67,13 +67,15 @@ export default function VendorDashboardPage() {
   };
 
   useEffect(() => {
-    if (!user || profile?.role !== 'VENDOR') {
+    if (authLoading) return;
+
+    if (!user || profile?.role !== 'vendor') {
       router.push('/login');
       return;
     }
 
     loadData();
-  }, [user, profile, router]);
+  }, [user, profile, authLoading, router]);
 
   const handleAccept = async (id) => {
     try {

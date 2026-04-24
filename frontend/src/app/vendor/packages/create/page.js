@@ -9,7 +9,7 @@ import ImageUpload from '@/components/ImageUpload';
 
 export default function CreatePackagePage() {
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const [form, setForm] = useState({
         title: '',
         short_description: '',
@@ -26,7 +26,9 @@ export default function CreatePackagePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    if (!user) {
+    if (authLoading) return <div className="pt-40 text-center animate-pulse text-luxury-gold-400">Verifying permissions...</div>;
+
+    if (!user || profile?.role !== 'vendor') {
         if (typeof window !== 'undefined') router.push('/login');
         return null;
     }

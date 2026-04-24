@@ -10,7 +10,7 @@ import ImageUpload from '@/components/ImageUpload';
 export default function EditPackagePage() {
     const router = useRouter();
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const [form, setForm] = useState({
         title: '',
         short_description: '',
@@ -29,7 +29,12 @@ export default function EditPackagePage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (!user) return;
+        if (authLoading) return;
+        if (!user || profile?.role !== 'vendor') {
+            router.push('/login');
+            return;
+        }
+
         const load = async () => {
             try {
                 const res = await api.packages.get(id);
@@ -54,7 +59,7 @@ export default function EditPackagePage() {
             }
         };
         load();
-    }, [id, user]);
+    }, [id, user, profile, authLoading, router]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,7 +68,7 @@ export default function EditPackagePage() {
         try {
             await api.packages.update(id, {
                 ...form,
-                base_price_cents: parseInt(form.base_price_cents * 100, 10),
+                base_price_cents: parseInt(form.base_price_cents, 10) * 100,
                 duration_hours: form.duration_hours ? parseInt(form.duration_hours, 10) : null,
                 min_guests: parseInt(form.min_guests, 10),
                 max_guests: form.max_guests ? parseInt(form.max_guests, 10) : null,
@@ -76,7 +81,7 @@ export default function EditPackagePage() {
         }
     };
 
-    if (loading) return <div className="pt-40 text-center text-luxury-gold-400 animate-pulse">Loading experience data...</div>;
+    if (authLoading || loading) return <div className="pt-40 text-center text-luxury-gold-400 animate-pulse">Verifying permissions and loading data...</div>;
 
     return (
         <div className="pt-24 pb-24 px-4 min-h-screen bg-luxury-black">
